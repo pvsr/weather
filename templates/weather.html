@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Weather
+{% endblock %}
+
+{% block content %}
+<h1>Weather </h1>
+
+{% if alerts %}
+{% for alert in alerts %}
+<p class="severe-alert">{{ alert.event }} until {{ alert.expires }}</p>
+{% endfor %}
+{% endif %}
+
+<div class="weather-container">
+  {% for period in forecast %}
+  <div>
+    <h1>{{ period.name }}</h1>
+    <h2>{{ period.fahrenheit }}°F / {{ period.celsius }}°C</h2>
+    <img src="{{ period.icon | replace('medium', 'large') }}" alt="weather icon"/>
+    <p>{{ period.detailedForecast }}</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
