@@ -48,7 +48,7 @@ def weather(location: str):
 
 
 def alerts(zone_id: str):
-    api = "{}/alerts/active/zone/{}".format(BASE_URL, zone_id)
+    api = f"{BASE_URL}/alerts/active/zone/{zone_id}"
     req = request_cache.get(api)
     json = req.json()
 
@@ -59,7 +59,7 @@ def alerts(zone_id: str):
 
 
 def forecast(office: str, grid_xy):
-    api = "{}/gridpoints/{}/{},{}/forecast".format(BASE_URL, office, grid_xy[0], grid_xy[1])
+    api = f"{BASE_URL}/gridpoints/{office}/{grid_xy[0]},{grid_xy[1]}/forecast"
     req = request_cache.get(api)
     json = req.json()
 
@@ -122,9 +122,9 @@ def pretty_date(d_str: datetime) -> str:
     elif d.date() > date.today() and d.date() - date.today() < timedelta(days=7):
         day = "%A"
     else:
-        day = "%b {}".format(ordinal(d.day))
+        day = f"%b {ordinal(d.day)}"
 
-    return d.strftime("%R {}".format(day))
+    return d.strftime(f"%R {day}")
 
 
 def ordinal(n: int) -> str:
@@ -136,4 +136,4 @@ def ordinal(n: int) -> str:
         suff = "rd"
     else:
         suff = "th"
-    return "{}{}".format(n, suff)
+    return f"{n}{suff}"
