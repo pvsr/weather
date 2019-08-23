@@ -1,0 +1,17 @@
+image: alpine/latest
+packages:
+  - rsync
+environment:
+  deploy: deploy@peterrice.xyz
+sources:
+  - https://git.sr.ht/~pvsr/weather
+secrets:
+  - fd8c73fd-672b-4ab0-99b2-56cfd92e73cd
+tasks:
+  - deploy: |
+      cd weather
+      sshopts="ssh -o StrictHostKeyChecking=no"
+      rsync --rsh="$sshopts" -rP static $deploy:/var/www/weather.peterrice.xyz/
+      rsync --rsh="$sshopts" -rP templates $deploy:/var/www/weather.peterrice.xyz/
+      rsync --rsh="$sshopts" -rP weather.py $deploy:/var/www/weather.peterrice.xyz/
+      $sshopts $deploy 'touch /etc/uwsgi/vassals/weather.ini'
