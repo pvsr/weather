@@ -7,42 +7,63 @@ from cachecontrol import CacheControl
 app = Flask(__name__)
 request_cache = CacheControl(requests.session())
 
-base_url = "https://api.weather.gov"
+BASE_URL = "https://api.weather.gov"
 
 # afaict there doesn't seem to be an easy way to go from grid points to zone id
-DEFAULT_ZONE_ID = "DCZ001"
-DEFAULT_OFFICE = "LWX"
-DEFAULT_GRID_X = 95
-DEFAULT_GRID_Y = 72
+DEFAULT_PRESET = "Somerville"
+PRESETS = {
+    "DC": {
+        "name": "Washington, DC",
+        "zone_id": "DCZ001",
+        "office": "LWX",
+        "grid_xy": (95, 72),
+    },
+    "Somerville": {
+        "name": "Somerville, MA",
+        "zone_id": "MAZ014",
+        "office": "BOX",
+        "grid_xy": (69, 77),
+    },
+}
 
 
 @app.route("/")
-def weather():
+def default_weather():
+    return weather(None)
+
+
+@app.route("/<location>")
+def weather(location: str):
+    if not location or location not in PRESETS:
+        location = DEFAULT_PRESET
+    data = PRESETS[location]
     return render_template(
         "weather.html",
-        forecast=forecast(DEFAULT_OFFICE, DEFAULT_GRID_X, DEFAULT_GRID_Y),
-        alerts=alerts(DEFAULT_ZONE_ID),
+        presets=PRESETS.keys(),
+        location=data["name"],
+        forecast=forecast(data["office"], data["grid_xy"]),
+        alerts=alerts(data["zone_id"]),
     )
 
 
 def alerts(zone_id: str):
-    api = "{}/alerts/active/zone/{}".format(base_url, zone_id)
+    api = "{}/alerts/active/zone/{}".format(BASE_URL, zone_id)
     req = request_cache.get(api)
     json = req.json()
 
-    if len(json["features"]) == 0:
+    if not json["features"]:
         return None
 
     return map(alert_properties, json["features"])
 
 
-def forecast(office: str, grid_x: int, grid_y: int):
-    api = "{}/gridpoints/{}/{},{}/forecast".format(base_url, office, grid_x, grid_y)
+def forecast(office: str, grid_xy):
+    api = "{}/gridpoints/{}/{},{}/forecast".format(BASE_URL, office, grid_xy[0], grid_xy[1])
     req = request_cache.get(api)
     json = req.json()
 
-    forecast = json["properties"]["periods"]
-    for period in forecast:
+    forecast_data = json["properties"]["periods"]
+    for period in forecast_data:
         if period["temperatureUnit"] == "F":
             period["fahrenheit"] = period["temperature"]
             period["celsius"] = round((period["temperature"] - 32) * (5 / 9))
@@ -53,7 +74,7 @@ def forecast(office: str, grid_x: int, grid_y: int):
         del period["temperatureUnit"]
         del period["temperature"]
         period["kelvin"] = period["celsius"] + 273.15
-    return forecast
+    return forecast_data
 
 
 def alert_properties(feature):

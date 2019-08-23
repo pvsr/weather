@@ -37,6 +37,12 @@ html {
   background-color: var(--bg0);
   color: var(--fg1);
   font: 16px 'Sarasa Term J', monospace;
+  text-align: center;
+}
+
+a {
+  color: var(--dark-green);
+  font-size: 1.2rem;
 }
 
 .severe-alert {
