@@ -39,6 +39,7 @@ def weather(location: str):
     data = PRESETS[location]
     return render_template(
         "weather.html",
+        current_preset=location,
         presets=PRESETS.keys(),
         location=data["name"],
         forecast=forecast(data["office"], data["grid_xy"]),

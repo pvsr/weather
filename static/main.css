@@ -40,6 +40,17 @@ html {
   text-align: center;
 }
 
+nav > * + *::before {
+  content: "| ";
+  color: var(--fg3);
+  padding: 0 0.2em;
+}
+
+.pseudo-link {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 a {
   font-size: 1.2rem;
   color: var(--dark-green);

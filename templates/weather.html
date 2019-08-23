@@ -7,9 +7,17 @@ Weather for {{ location }}
 {% block content %}
 <h1>Weather for {{ location }}</h1>
 
+<nav>
 {% for preset in presets %}
+<span>
+{% if preset == current_preset %}
+<span class="pseudo-link">{{ preset }}</span>
+{% else %}
 <a class="no-visited" href="/{{ preset }}">{{ preset }}</a>
+{% endif %}
+</span>
 {% endfor %}
+</nav>
 
 {% if alerts %}
 {% for alert in alerts %}
