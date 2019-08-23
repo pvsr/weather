@@ -8,7 +8,7 @@ Weather for {{ location }}
 <h1>Weather for {{ location }}</h1>
 
 {% for preset in presets %}
-<a href="/{{ preset }}">{{ preset }}</a>
+<a class="no-visited" href="/{{ preset }}">{{ preset }}</a>
 {% endfor %}
 
 {% if alerts %}

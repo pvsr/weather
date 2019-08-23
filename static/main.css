@@ -41,8 +41,24 @@ html {
 }
 
 a {
-  color: var(--dark-green);
   font-size: 1.2rem;
+  color: var(--dark-green);
+}
+
+a.no-visited:visited {
+  color: var(--dark-green);
+}
+
+a:visited {
+  color: var(--dark-purple);
+}
+
+a:hover {
+  color: var(--light-green);
+}
+
+a:active {
+  color: var(--light-red);
 }
 
 .severe-alert {
