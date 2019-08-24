@@ -1,29 +1,57 @@
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
+from typing import NamedTuple, Optional, Tuple
 
-from flask import Flask, render_template
 import requests
-from cachecontrol import CacheControl
+from cachecontrol import CacheControl  # type: ignore
+from flask import Flask, render_template
 
 app = Flask(__name__)
 request_cache = CacheControl(requests.session())
 
 BASE_URL = "https://api.weather.gov"
 
+
+class Location(NamedTuple):
+    name: str
+    zone_id: str
+    office: str
+    grid_xy: Tuple[int, int]
+
+    def forecast(self):
+        api = f"{BASE_URL}/gridpoints/{self.office}/{self.grid_xy[0]},{self.grid_xy[1]}/forecast"
+        req = request_cache.get(api)
+        json = req.json()
+
+        forecast_data = json["properties"]["periods"]
+        for period in forecast_data:
+            if period["temperatureUnit"] == "F":
+                period["fahrenheit"] = period["temperature"]
+                period["celsius"] = round((period["temperature"] - 32) * (5 / 9))
+            elif period["temperatureUnit"] == "C":
+                period["celsius"] = period["temperature"]
+                period["fahrenheit"] = round(period["temperature"] * (9 / 5) + 32)
+
+            del period["temperatureUnit"]
+            del period["temperature"]
+            period["kelvin"] = period["celsius"] + 273.15
+        return forecast_data
+
+    def alerts(self):
+        api = f"{BASE_URL}/alerts/active/zone/{self.zone_id}"
+        req = request_cache.get(api)
+        json = req.json()
+
+        if not json["features"]:
+            return None
+
+        return map(alert_properties, json["features"])
+
+
 # afaict there doesn't seem to be an easy way to go from grid points to zone id
 DEFAULT_PRESET = "Somerville"
 PRESETS = {
-    "DC": {
-        "name": "Washington, DC",
-        "zone_id": "DCZ001",
-        "office": "LWX",
-        "grid_xy": (95, 72),
-    },
-    "Somerville": {
-        "name": "Somerville, MA",
-        "zone_id": "MAZ014",
-        "office": "BOX",
-        "grid_xy": (69, 77),
-    },
+    "DC": Location("Washington, DC", "DCZ001", "LWX", (95, 72)),
+    "Somerville": Location("Somerville, MA", "MAZ014", "BOX", (69, 77)),
 }
 
 
@@ -32,50 +60,19 @@ def default_weather():
     return weather(None)
 
 
-@app.route("/<location>")
-def weather(location: str):
-    if not location or location not in PRESETS:
-        location = DEFAULT_PRESET
-    data = PRESETS[location]
+@app.route("/<key>")
+def weather(key: Optional[str]):
+    if not key or key not in PRESETS:
+        key = DEFAULT_PRESET
+    data = PRESETS[key]
     return render_template(
         "weather.html",
-        current_preset=location,
+        current_preset=key,
         presets=PRESETS.keys(),
-        location=data["name"],
-        forecast=forecast(data["office"], data["grid_xy"]),
-        alerts=alerts(data["zone_id"]),
+        location=data.name,
+        forecast=data.forecast(),
+        alerts=data.alerts(),
     )
-
-
-def alerts(zone_id: str):
-    api = f"{BASE_URL}/alerts/active/zone/{zone_id}"
-    req = request_cache.get(api)
-    json = req.json()
-
-    if not json["features"]:
-        return None
-
-    return map(alert_properties, json["features"])
-
-
-def forecast(office: str, grid_xy):
-    api = f"{BASE_URL}/gridpoints/{office}/{grid_xy[0]},{grid_xy[1]}/forecast"
-    req = request_cache.get(api)
-    json = req.json()
-
-    forecast_data = json["properties"]["periods"]
-    for period in forecast_data:
-        if period["temperatureUnit"] == "F":
-            period["fahrenheit"] = period["temperature"]
-            period["celsius"] = round((period["temperature"] - 32) * (5 / 9))
-        elif period["temperatureUnit"] == "C":
-            period["celsius"] = period["temperature"]
-            period["fahrenheit"] = round(period["temperature"] * (9 / 5) + 32)
-
-        del period["temperatureUnit"]
-        del period["temperature"]
-        period["kelvin"] = period["celsius"] + 273.15
-    return forecast_data
 
 
 def alert_properties(feature):
@@ -109,7 +106,7 @@ def alert_properties(feature):
     }
 
 
-def pretty_date(d_str: datetime) -> str:
+def pretty_date(d_str: str) -> str:
     try:
         d = datetime.fromisoformat(d_str)
     except ValueError as e:
