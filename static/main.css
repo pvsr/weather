@@ -40,10 +40,9 @@ html {
   text-align: center;
 }
 
-nav > * + *::before {
-  content: "| ";
-  color: var(--fg3);
-  padding: 0 0.2em;
+nav > * {
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .pseudo-link {
