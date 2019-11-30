@@ -1,10 +1,10 @@
-{% extends 'base.html' %}
+<!doctype html>
+<title>Weather for {{ location }}</title>
+<meta name="viewport" content="width=device-width, intitial-scale=1.0">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+<script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
 
-{% block title %}
-Weather for {{ location }}
-{% endblock %}
-
-{% block content %}
 <h1>Weather for {{ location }}</h1>
 
 <nav>
@@ -25,6 +25,21 @@ Weather for {{ location }}
 {% endfor %}
 {% endif %}
 
+<div class="ct-chart"></div>
+<script>
+{% include 'chart.js' %}
+</script>
+<!-- TODO noscript>
+  {% for hour in hourly %}
+  <div>
+    <p>{{ hour.startTime }}</p>
+    <p>{{ hour.fahrenheit }}°F / {{ hour.celsius }}°C</p>
+    <p>{{ hour.shortForecast }}</p>
+    <p>{{ hour.endTime }}</p>
+  </div>
+{% endfor %}
+</noscript -->
+
 <div class="weather-container">
   {% for period in forecast %}
   <div>
@@ -35,4 +50,5 @@ Weather for {{ location }}
   </div>
   {% endfor %}
 </div>
-{% endblock %}
+
+<footer><a href="https://git.sr.ht/~pvsr/weather">Source code</a></footer>

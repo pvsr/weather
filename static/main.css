@@ -114,3 +114,35 @@ a:active {
   padding: 1px;
   background: black;
 }
+
+/*
+.ct-chart {
+  min-width: TODO
+}
+*/
+
+.ct-label {
+  color: var(--fg1);
+  font-size: 1em;
+}
+
+@media screen and (max-width: 768px)
+.ct-labels > foreignObject .ct-label.ct-horizontal.ct-end {
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+@media screen and (min-width: 768px)
+.ct-labels > foreignObject:not(:first-of-type) .ct-label.ct-horizontal.ct-end {
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.ct-grid {
+  stroke: var(--fg1);
+  opacity: 0.2;
+}
+
+line.ct-horizontal {
+  display: none;
+}

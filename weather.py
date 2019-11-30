@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from typing import NamedTuple, Optional, Tuple
+import json
 
 import requests
 from cachecontrol import CacheControl  # type: ignore
@@ -9,6 +10,7 @@ app = Flask(__name__)
 request_cache = CacheControl(requests.session())
 
 BASE_URL = "https://api.weather.gov"
+LOCAL = False
 
 
 class Location(NamedTuple):
@@ -17,35 +19,46 @@ class Location(NamedTuple):
     office: str
     grid_xy: Tuple[int, int]
 
+    def hourly(self):
+        if LOCAL:
+            with open('hourly', 'r') as f:
+                return json.load(f)
+        api = f"{BASE_URL}/gridpoints/{self.office}/{self.grid_xy[0]},{self.grid_xy[1]}/forecast/hourly"
+        req = request_cache.get(api)
+        return req.json()
+
+
     def forecast(self):
+        if LOCAL:
+            with open('forecast', 'r') as f:
+                return json.load(f)
         api = f"{BASE_URL}/gridpoints/{self.office}/{self.grid_xy[0]},{self.grid_xy[1]}/forecast"
         req = request_cache.get(api)
-        json = req.json()
-
-        forecast_data = json["properties"]["periods"]
-        for period in forecast_data:
-            if period["temperatureUnit"] == "F":
-                period["fahrenheit"] = period["temperature"]
-                period["celsius"] = round((period["temperature"] - 32) * (5 / 9))
-            elif period["temperatureUnit"] == "C":
-                period["celsius"] = period["temperature"]
-                period["fahrenheit"] = round(period["temperature"] * (9 / 5) + 32)
-
-            del period["temperatureUnit"]
-            del period["temperature"]
-            period["kelvin"] = period["celsius"] + 273.15
-        return forecast_data
+        return req.json()
 
     def alerts(self):
+        if LOCAL:
+            with open('alerts', 'r') as f:
+                return json.load(f)
         api = f"{BASE_URL}/alerts/active/zone/{self.zone_id}"
         req = request_cache.get(api)
-        json = req.json()
+        return req.json()
 
-        if not json["features"]:
-            return None
+def forecasts(data):
+    forecast_data = data["properties"]["periods"]
+    for period in forecast_data:
+        if period["temperatureUnit"] == "F":
+            period["fahrenheit"] = period["temperature"]
+            period["celsius"] = round((period["temperature"] - 32) * (5 / 9))
+        elif period["temperatureUnit"] == "C":
+            period["celsius"] = period["temperature"]
+            period["fahrenheit"] = round(period["temperature"] * (9 / 5) + 32)
 
-        return map(alert_properties, json["features"])
+        del period["temperatureUnit"]
+        del period["temperature"]
+        period["kelvin"] = period["celsius"] + 273.15
 
+    return forecast_data
 
 # afaict there doesn't seem to be an easy way to go from grid points to zone id
 DEFAULT_PRESET = "Somerville"
@@ -65,13 +78,17 @@ def weather(key: Optional[str]):
     if not key or key not in PRESETS:
         key = DEFAULT_PRESET
     data = PRESETS[key]
+
+    alerts = map(alert_properties, data.alerts()["features"] or [])
+
     return render_template(
         "weather.html",
         current_preset=key,
         presets=PRESETS.keys(),
         location=data.name,
-        forecast=data.forecast(),
-        alerts=data.alerts(),
+        forecast=forecasts(data.forecast()),
+        hourly=forecasts(data.hourly())[0:24],
+        alerts=alerts,
     )
 
 
