@@ -92,6 +92,11 @@ def weather(key: Optional[str]):
     )
 
 
+@app.template_filter('quote')
+def quote(s):
+    return f'"{s}"'
+
+
 def alert_properties(feature):
     # definitely useful
     # onset: datetime

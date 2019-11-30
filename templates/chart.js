@@ -2,7 +2,7 @@ var label = function(n) {
   return (t, i) => i % n === 0 ? (i === 0 ? 'Now' : t.toLocaleTimeString('en-US', { 'hour': 'numeric' })) : null;
 };
 var data = {
-  labels: ['{{ hourly | join('\',\'', attribute='startTime') | safe }}']
+  labels: [{{ hourly | map(attribute='startTime') | map('quote') | join(',') }}]
   .map(tStr => new Date(tStr)),
   series: [[{{ hourly | join(',', attribute='fahrenheit') }}]]
 };
