@@ -3,6 +3,7 @@ packages:
   - rsync
 environment:
   deploy: deploy@peterrice.xyz
+  port: 20021
 sources:
   - https://git.sr.ht/~pvsr/weather
 secrets:
@@ -10,7 +11,7 @@ secrets:
 tasks:
   - deploy: |
       cd weather
-      sshopts="ssh -o StrictHostKeyChecking=no"
+      sshopts="ssh -p $port -o StrictHostKeyChecking=no"
       rsync --rsh="$sshopts" -rP static $deploy:/var/www/weather.peterrice.xyz/
       rsync --rsh="$sshopts" -rP templates $deploy:/var/www/weather.peterrice.xyz/
       rsync --rsh="$sshopts" -rP weather.py $deploy:/var/www/weather.peterrice.xyz/
