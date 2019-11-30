@@ -126,16 +126,18 @@ a:active {
   font-size: 1em;
 }
 
-@media screen and (max-width: 768px)
-.ct-labels > foreignObject .ct-label.ct-horizontal.ct-end {
-  transform: translateX(-50%);
-  text-align: center;
+@media screen and (max-width: 768px) {
+  .ct-labels > foreignObject .ct-label.ct-horizontal.ct-end {
+    transform: translateX(-50%);
+    text-align: center;
+  }
 }
 
-@media screen and (min-width: 768px)
-.ct-labels > foreignObject:not(:first-of-type) .ct-label.ct-horizontal.ct-end {
-  transform: translateX(-50%);
-  text-align: center;
+@media screen and (min-width: 768px) {
+  .ct-labels > foreignObject:not(:first-of-type) .ct-label.ct-horizontal.ct-end {
+    transform: translateX(-50%);
+    text-align: center;
+  }
 }
 
 .ct-grid {
