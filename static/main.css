@@ -88,10 +88,6 @@ a:active {
   font-size: 1.5rem;
 }
 
-.severe-alert > p {
-  max-width: 65vw;
-}
-
 .weather-container {
   display: flex;
   flex-wrap: wrap;
@@ -144,6 +140,10 @@ a:active {
   .ct-labels > foreignObject:not(:first-of-type) .ct-label.ct-horizontal.ct-end {
     transform: translateX(-50%);
     text-align: center;
+  }
+
+  .severe-alert > p {
+    max-width: 65vw;
   }
 }
 
