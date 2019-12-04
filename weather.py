@@ -3,7 +3,7 @@ from typing import Optional
 
 from flask import Flask, render_template
 
-from location import Location, read_locations
+from location import read_locations
 
 app = Flask(__name__)
 
@@ -50,7 +50,7 @@ def weather(key: Optional[str]):
 
 
 @app.template_filter('quote')
-def quote(s):
+def quote(s: str):
     return f'"{s}"'
 
 
