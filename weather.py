@@ -78,7 +78,7 @@ def alert_properties(feature):
     properties = feature["properties"]
     # TODO more detail. event can be "Special Weather Statement", which isn't
     # very useful on its own
-    str_props = ["event", "severity"]
+    str_props = ["event", "severity", "description"]
     date_props = ["onset", "expires"]
     return {
         **{k: properties[k] for k in str_props},

@@ -21,7 +21,11 @@
 
 {% if alerts %}
 {% for alert in alerts %}
-<p class="severe-alert">{{ alert.event }} until {{ alert.expires }}</p>
+<!-- TODO differentiate by severity -->
+<div class="severe-alert">
+  <h2>{{ alert.event }} until {{ alert.expires }}</h2>
+  <p>{{ alert.description }}</p>
+</div>
 {% endfor %}
 {% endif %}
 
