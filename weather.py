@@ -3,7 +3,7 @@ from typing import Optional
 
 from flask import Flask, render_template
 
-import location
+from location import Location, read_locations
 
 app = Flask(__name__)
 
@@ -32,20 +32,19 @@ def default_weather():
 
 @app.route("/<key>")
 def weather(key: Optional[str]):
-    locations = location.read_locations()
+    locations = read_locations()
     assert len(locations) > 0
 
-    data = (key and locations.get(key)) or list(locations.values())[0]
+    location = (key and locations.get(key)) or list(locations.values())[0]
 
-    alerts = map(alert_properties, data.alerts()["features"] or [])
+    alerts = map(alert_properties, location.alerts()["features"] or [])
 
     return render_template(
         "weather.html",
-        current_preset=key,
-        presets=locations,
-        location=data.long_name,
-        forecast=forecasts(data.forecast()),
-        hourly=forecasts(data.hourly())[0:48],
+        current_location=location,
+        available_locations=locations.keys(),
+        forecast=forecasts(location.forecast()),
+        hourly=forecasts(location.hourly())[0:48],
         alerts=alerts,
     )
 

@@ -1,19 +1,19 @@
 <!doctype html>
-<title>Weather for {{ location }}</title>
+<title>Weather for {{ current_location.long_name }}</title>
 <meta name="viewport" content="width=device-width, intitial-scale=1.0">
 <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
 
-<h1>Weather for {{ location }}</h1>
+<h1>Weather for {{ current_location.long_name }}</h1>
 
 <nav>
-{% for preset in presets %}
+{% for short_name in available_locations %}
 <span>
-{% if preset == current_preset %}
-<span class="pseudo-link">{{ preset }}</span>
+{% if short_name == current_location.short_name %}
+<span class="pseudo-link">{{ short_name }}</span>
 {% else %}
-<a class="no-visited" href="/{{ preset }}">{{ preset }}</a>
+<a class="no-visited" href="/{{ short_name }}">{{ short_name }}</a>
 {% endif %}
 </span>
 {% endfor %}
