@@ -14,5 +14,6 @@ tasks:
       sshopts="ssh -p $port -o StrictHostKeyChecking=no"
       rsync --rsh="$sshopts" -rP static $deploy:/var/www/weather.peterrice.xyz/
       rsync --rsh="$sshopts" -rP templates $deploy:/var/www/weather.peterrice.xyz/
-      rsync --rsh="$sshopts" -rP weather.py $deploy:/var/www/weather.peterrice.xyz/
+      rsync --rsh="$sshopts" -rP *.py $deploy:/var/www/weather.peterrice.xyz/
+      rsync --rsh="$sshopts" -rP locations.ini $deploy:/var/www/weather.peterrice.xyz/
       $sshopts $deploy 'touch /etc/uwsgi/vassals/weather.ini'

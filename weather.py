@@ -1,48 +1,12 @@
 from datetime import date, datetime, timedelta
-from typing import NamedTuple, Optional, Tuple
-import json
+from typing import Optional
 
-import requests
-from cachecontrol import CacheControl  # type: ignore
 from flask import Flask, render_template
 
+import location
+
 app = Flask(__name__)
-request_cache = CacheControl(requests.session())
 
-BASE_URL = "https://api.weather.gov"
-LOCAL = False
-
-
-class Location(NamedTuple):
-    name: str
-    zone_id: str
-    office: str
-    grid_xy: Tuple[int, int]
-
-    def hourly(self):
-        if LOCAL:
-            with open('hourly', 'r') as f:
-                return json.load(f)
-        api = f"{BASE_URL}/gridpoints/{self.office}/{self.grid_xy[0]},{self.grid_xy[1]}/forecast/hourly"
-        req = request_cache.get(api)
-        return req.json()
-
-
-    def forecast(self):
-        if LOCAL:
-            with open('forecast', 'r') as f:
-                return json.load(f)
-        api = f"{BASE_URL}/gridpoints/{self.office}/{self.grid_xy[0]},{self.grid_xy[1]}/forecast"
-        req = request_cache.get(api)
-        return req.json()
-
-    def alerts(self):
-        if LOCAL:
-            with open('alerts', 'r') as f:
-                return json.load(f)
-        api = f"{BASE_URL}/alerts/active/zone/{self.zone_id}"
-        req = request_cache.get(api)
-        return req.json()
 
 def forecasts(data):
     forecast_data = data["properties"]["periods"]
@@ -60,13 +24,6 @@ def forecasts(data):
 
     return forecast_data
 
-# afaict there doesn't seem to be an easy way to go from grid points to zone id
-DEFAULT_PRESET = "Somerville"
-PRESETS = {
-    "DC": Location("Washington, DC", "DCZ001", "LWX", (95, 72)),
-    "Somerville": Location("Somerville, MA", "MAZ014", "BOX", (69, 77)),
-}
-
 
 @app.route("/")
 def default_weather():
@@ -75,19 +32,20 @@ def default_weather():
 
 @app.route("/<key>")
 def weather(key: Optional[str]):
-    if not key or key not in PRESETS:
-        key = DEFAULT_PRESET
-    data = PRESETS[key]
+    locations = location.read_locations()
+    assert len(locations) > 0
+
+    data = (key and locations.get(key)) or list(locations.values())[0]
 
     alerts = map(alert_properties, data.alerts()["features"] or [])
 
     return render_template(
         "weather.html",
         current_preset=key,
-        presets=PRESETS.keys(),
-        location=data.name,
+        presets=locations,
+        location=data.long_name,
         forecast=forecasts(data.forecast()),
-        hourly=forecasts(data.hourly())[0:24],
+        hourly=forecasts(data.hourly())[0:48],
         alerts=alerts,
     )
 
