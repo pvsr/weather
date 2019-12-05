@@ -127,6 +127,7 @@ a:active {
 .ct-label {
   color: var(--fg1);
   font-size: 1em;
+  /* TODO prevent wrapping? */
 }
 
 @media screen and (max-width: 768px) {

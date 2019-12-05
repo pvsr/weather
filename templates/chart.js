@@ -18,14 +18,15 @@ new Chartist.Line('.ct-chart', data, {
       {
         showPoint: false,
         axisX: {
-          labelInterpolationFnc: label(8),
+          // TODO maybe derive from number of data points
+          labelInterpolationFnc: label(6),
         }
       },
     ],
     ['screen and (min-width: 768px)',
       {
         axisX: {
-          labelInterpolationFnc: label(4),
+          labelInterpolationFnc: label(3),
         }
       },
     ]

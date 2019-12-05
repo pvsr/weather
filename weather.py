@@ -44,7 +44,7 @@ def weather(key: Optional[str]):
         current_location=location,
         available_locations=locations.keys(),
         forecast=forecasts(location.forecast()),
-        hourly=forecasts(location.hourly())[0:48],
+        hourly=forecasts(location.hourly())[0:36],
         alerts=alerts,
     )
 

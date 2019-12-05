@@ -46,7 +46,10 @@ def fetch_json(url: str, default: str):
         with open(default, 'r') as local_data:
             return json.load(local_data)
     else:
-        return REQUEST_CACHE.get(url).json()
+        # print(f"requesting {url}")
+        resp = REQUEST_CACHE.get(url)
+        # print(resp)
+        return resp.json()
 
 
 def read_locations() -> Mapping[str, Location]:
