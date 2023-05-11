@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import Optional
 
-from flask import Flask, abort, render_template
+from flask import Flask, render_template
 
 from .location import read_locations
 
@@ -34,7 +34,7 @@ def default_weather():
 def weather(key: Optional[str]):
     locations = read_locations()
     if len(locations) == 0:
-        abort(500)
+        return "no locations configured", 500
 
     location = (key and locations.get(key)) or list(locations.values())[0]
 
