@@ -1,0 +1,5 @@
+select = ["E", "F", "W", "I", "UP", "N", "S", "B", "A", "C4", "PT", "SIM", "ARG"]
+target-version = "py39"
+ignore = [
+  "E501", # line too long
+]

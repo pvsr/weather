@@ -1,7 +1,6 @@
 import configparser
 import json
-
-from typing import Mapping
+from collections.abc import Mapping
 
 import requests
 from cachecontrol import CacheControl  # type: ignore
@@ -20,11 +19,13 @@ class Location:
 
     def __init__(
         self, short_name: str, long_name: str, latitude: float, longitude: float
-    ):
+    ) -> None:
         self.short_name = short_name
         self.long_name = long_name
 
-        trunc = lambda f: format(f, ".4f")
+        def trunc(f):
+            return format(f, ".4f")
+
         url = f"{BASE_URL}/points/{trunc(latitude)},{trunc(longitude)}"
         data = fetch_json(url, "point")["properties"]
 
@@ -50,7 +51,7 @@ LOCAL = False
 
 def fetch_json(url: str, default: str):
     if LOCAL:
-        with open(default, "r") as local_data:
+        with open(default) as local_data:
             return json.load(local_data)
     else:
         # print(f"requesting {url}")

@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import Optional
 
-from flask import Flask, render_template
+from flask import Flask, abort, render_template
 
 from location import read_locations
 
@@ -33,7 +33,8 @@ def default_weather():
 @app.route("/<key>")
 def weather(key: Optional[str]):
     locations = read_locations()
-    assert len(locations) > 0
+    if len(locations) == 0:
+        abort(500)
 
     location = (key and locations.get(key)) or list(locations.values())[0]
 
@@ -88,7 +89,7 @@ def alert_properties(feature):
 def pretty_date(d_str: str) -> str:
     try:
         d = datetime.fromisoformat(d_str)
-    except ValueError as e:
+    except ValueError:
         return d_str
 
     if d.date() == date.today():
