@@ -1,3 +1,4 @@
 .mypy_cache/
 .webcache/
 __pycache__/
+.pre-commit-config.yaml
