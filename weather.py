@@ -49,7 +49,7 @@ def weather(key: Optional[str]):
     )
 
 
-@app.template_filter('quote')
+@app.template_filter("quote")
 def quote(s: str):
     return f'"{s}"'
 
