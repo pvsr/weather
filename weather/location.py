@@ -1,6 +1,7 @@
 import configparser
 import json
 from collections.abc import Mapping
+from importlib.resources import files
 
 import requests
 from cachecontrol import CacheControl  # type: ignore
@@ -62,7 +63,7 @@ def fetch_json(url: str, default: str):
 
 def read_locations() -> Mapping[str, Location]:
     conf = configparser.ConfigParser()
-    conf.read("locations.ini")
+    conf.read_string(files("weather").joinpath("locations.ini").read_text())
     result = {}
     for long_name in conf.sections():
         section = conf[long_name]

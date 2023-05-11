@@ -1,0 +1,15 @@
+[project]
+name = "weather"
+version = "0.0.0"
+license = {text = "AGPL-3.0-or-later"}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+select = ["E", "F", "W", "I", "UP", "N", "S", "B", "A", "C4", "PT", "SIM", "ARG"]
+target-version = "py39"
+ignore = [
+  "E501", # line too long
+]

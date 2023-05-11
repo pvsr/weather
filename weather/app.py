@@ -3,9 +3,9 @@ from typing import Optional
 
 from flask import Flask, abort, render_template
 
-from location import read_locations
+from .location import read_locations
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 
 def forecasts(data):
@@ -25,12 +25,12 @@ def forecasts(data):
     return forecast_data
 
 
-@app.route("/")
+@application.route("/")
 def default_weather():
     return weather(None)
 
 
-@app.route("/<key>")
+@application.route("/<key>")
 def weather(key: Optional[str]):
     locations = read_locations()
     if len(locations) == 0:
@@ -50,7 +50,7 @@ def weather(key: Optional[str]):
     )
 
 
-@app.template_filter("quote")
+@application.template_filter("quote")
 def quote(s: str):
     return f'"{s}"'
 
