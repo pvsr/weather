@@ -27,6 +27,8 @@
           inherit (cfg) enable;
           serviceConfig = {
             DynamicUser = true;
+            Restart = "always";
+            RestartSec = 5;
             ExecStart = ''
               ${pkgs.python3Packages.gunicorn}/bin/gunicorn -b ${cfg.bind} weather.app
             '';
