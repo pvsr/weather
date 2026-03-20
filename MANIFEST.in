@@ -1,3 +1,0 @@
-include weather/static/*
-include weather/templates/*
-include weather/locations.ini

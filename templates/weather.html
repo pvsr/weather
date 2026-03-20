@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <title>Weather for <%= long_name %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/chartist.min.css">
+  <link rel="stylesheet" href="static/main.css">
+  <script src="static/chartist.min.js"></script>
+</head>
+<body>
+  <h1>Weather for <%= long_name %></h1>
+
+  <nav>
+  <% for loc in nav_items %>
+    <span>
+    <% if loc.is_current %>
+      <span class="pseudo-link"><%= loc.name %></span>
+    <% else %>
+      <a class="no-visited" href="<%= loc.path %>"><%= loc.name %></a>
+    <% end %>
+    </span>
+  <% end %>
+  </nav>
+
+  <% for alert in alerts %>
+    <div class="severe-alert">
+      <h2><%= alert.event %> until <%= alert.expires %></h2>
+      <p><%= alert.description %></p>
+    </div>
+  <% end %>
+
+  <div class="ct-chart"></div>
+  <script>
+    var label = function(n) {
+      return (t, i) => i % n === 0 ? (i === 0 ? 'Now' : t.toLocaleTimeString('en-US', { 'hour': 'numeric' })) : null;
+    };
+    var data = {
+      labels: <%= raw hourly_labels %>.map(tStr => new Date(tStr)),
+      series: [[<%= raw hourly_temps %>]]
+    };
+    new Chartist.Line('.ct-chart', data, {
+      height: '200px',
+      axisY: { labelInterpolationFnc: d => d + '\u00b0F' }
+    }, [
+      ['screen and (max-width: 768px)', { showPoint: false, axisX: { labelInterpolationFnc: label(6) } }],
+      ['screen and (min-width: 768px)', { axisX: { labelInterpolationFnc: label(3) } }]
+    ]);
+  </script>
+
+  <div class="weather-container">
+  <% for period in periods %>
+    <div>
+      <h1><%= period.name %></h1>
+      <h2><%= period.fahrenheit %>&deg;F / <%= period.celsius %>&deg;C</h2>
+      <img src="<%= period.icon %>" alt="weather icon"/>
+      <p><%= period.detailed_forecast %></p>
+    </div>
+  <% end %>
+  </div>
+
+  <footer><a href="https://github.com/pvsr/weather">Source code</a></footer>
+</body>
+</html>

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ -z "${PAGES_PASSWORD:-}" ] || [ -z "${PAGES_DOMAIN:-}" ]; then
+    echo '$PAGES_PASSWORD and $PAGES_DOMAIN must be set' >&2
+    exit 1
+fi
+
+tar -ch -C output . \
+    | zstd \
+    | curl https://grebedoc.dev -X PUT \
+    -H "Host: $PAGES_DOMAIN" \
+    -H "Authorization: Pages $PAGES_PASSWORD" \
+    -H "Content-Type: application/x-tar+zstd" \
+    --data-binary @-

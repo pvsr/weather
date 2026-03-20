@@ -1,4 +1,5 @@
-.mypy_cache/
-.webcache/
-__pycache__/
-.pre-commit-config.yaml
+*.beam
+*.ez
+/build
+erl_crash.dump
+output/

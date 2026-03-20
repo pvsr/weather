@@ -1,0 +1,23 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '19 */1 * * *'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: deploy
+    env:
+      PAGES_PASSWORD: ${{ secrets.PAGES_PASSWORD }}
+      PAGES_DOMAIN: ${{ vars.PAGES_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '27'
+          gleam-version: '1.18.1'
+      - run: gleam run
+      - run: ./upload
