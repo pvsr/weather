@@ -40,9 +40,10 @@
     };
     new Chartist.Line('.ct-chart', data, {
       height: '200px',
+      showPoint: false,
       axisY: { labelInterpolationFnc: d => d + '\u00b0F' }
     }, [
-      ['screen and (max-width: 768px)', { showPoint: false, axisX: { labelInterpolationFnc: label(6) } }],
+      ['screen and (max-width: 768px)', { axisX: { labelInterpolationFnc: label(6) } }],
       ['screen and (min-width: 768px)', { axisX: { labelInterpolationFnc: label(3) } }]
     ]);
   </script>
