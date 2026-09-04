@@ -9,7 +9,7 @@ import glemplate/assigns
 import glemplate/html
 import glemplate/parser
 import locations.{type LocationConfig}
-import nws_api.{type ForecastData}
+import nws_api.{type ForecastData, type WeatherAlert, type WeatherPeriod}
 import simplifile
 import snag.{type Result}
 
@@ -130,24 +130,27 @@ fn build_assigns(
       )
     })
 
-  let alerts = list.map(data.alerts, alert_to_assign)
+  let hourly_labels =
+    data.hourly
+    |> list.map(fn(h) { "\"" <> h.start_time <> "\"" })
+    |> string.join(", ")
 
-  let hourly_labels = build_hourly_labels(data.hourly)
-  let hourly_temps = build_hourly_temps(data.hourly)
-
-  let periods = list.map(data.periods, period_to_assign)
+  let hourly_temps =
+    data.hourly
+    |> list.map(fn(h) { int.to_string(h.fahrenheit) })
+    |> string.join(",")
 
   assigns.from_list([
     #("long_name", assigns.String(current.long_name)),
     #("nav_items", assigns.List(nav_items)),
-    #("alerts", assigns.List(alerts)),
     #("hourly_labels", assigns.String(hourly_labels)),
     #("hourly_temps", assigns.String(hourly_temps)),
-    #("periods", assigns.List(periods)),
+    #("alerts", assigns.List(list.map(data.alerts, alert_to_assign))),
+    #("periods", assigns.List(list.map(data.periods, period_to_assign))),
   ])
 }
 
-fn period_to_assign(p: nws_api.WeatherPeriod) -> assigns.AssignData {
+fn period_to_assign(p: WeatherPeriod) -> assigns.AssignData {
   assigns.Dict(
     dict.from_list([
       #("name", assigns.String(p.name)),
@@ -159,7 +162,7 @@ fn period_to_assign(p: nws_api.WeatherPeriod) -> assigns.AssignData {
   )
 }
 
-fn alert_to_assign(a: nws_api.WeatherAlert) -> assigns.AssignData {
+fn alert_to_assign(a: WeatherAlert) -> assigns.AssignData {
   assigns.Dict(
     dict.from_list([
       #("event", assigns.String(a.event)),
@@ -168,15 +171,4 @@ fn alert_to_assign(a: nws_api.WeatherAlert) -> assigns.AssignData {
       #("expires", assigns.String(a.expires)),
     ]),
   )
-}
-
-fn build_hourly_labels(hourly: List(nws_api.HourlyWeather)) -> String {
-  let labels = list.map(hourly, fn(h) { "\"" <> h.start_time <> "\"" })
-
-  "[" <> string.join(labels, ", ") <> "]"
-}
-
-fn build_hourly_temps(hourly: List(nws_api.HourlyWeather)) -> String {
-  let temps = list.map(hourly, fn(h) { int.to_string(h.fahrenheit) })
-  string.join(temps, ",")
 }
