@@ -31,12 +31,29 @@
   --light-aqua: #8ec07c;
   --light-orange: #f38019;
   --light-gray: #a89984;
+
+  line-height: 1.5;
+  font-size: 1.1rem;
+  overflow-wrap: break-word;
+  --sans-font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
+    "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
+    "Helvetica Neue", sans-serif;
+  --mono-font: "Maple Mono", monospace;
+  font-family: var(--mono-font);
+}
+
+@font-face {
+  font-family: 'Maple Mono';
+  src: local('Maple Mono'), local('MapleMono'),
+       url('/static/MapleMono-Regular.ttf.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 html {
   background-color: var(--bg0);
   color: var(--fg1);
-  font: 16px 'Sarasa Term J', monospace;
   text-align: center;
 }
 
@@ -126,7 +143,7 @@ a:active {
 
 .ct-label {
   color: var(--fg1);
-  font-size: 1em;
+  font-size: 0.9rem;
   /* TODO prevent wrapping? */
 }
 
