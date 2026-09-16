@@ -1,4 +1,5 @@
 import gleam/dict
+import gleam/erlang/application
 import gleam/int
 import gleam/io
 import gleam/list
@@ -21,12 +22,17 @@ pub fn main() {
 }
 
 fn build_site() -> Result(Nil) {
-  use locations <- result.try(locations.load("locations.toml"))
+  use priv <- result.try(
+    application.priv_directory("weather")
+    |> snag.replace_error("Failed to get priv directory"),
+  )
+
+  use locations <- result.try(locations.load(priv <> "/locations.toml"))
 
   io.println("Loaded " <> int.to_string(list.length(locations)) <> " locations")
 
   use template_str <- result.try(
-    simplifile.read("templates/weather.html")
+    simplifile.read(priv <> "/templates/weather.html")
     |> snag.map_error(string.inspect)
     |> snag.context("Failed to read templates/weather.html"),
   )
@@ -57,7 +63,7 @@ fn build_site() -> Result(Nil) {
 
   use _ <- result.try(link_index(first))
 
-  link_static()
+  link_static(priv)
 }
 
 fn link_index(loc: LocationConfig) -> Result(Nil) {
@@ -72,8 +78,8 @@ fn link_index(loc: LocationConfig) -> Result(Nil) {
   io.println("  Linked " <> from <> " to " <> to)
 }
 
-fn link_static() -> Result(Nil) {
-  let to = "../static"
+fn link_static(priv) -> Result(Nil) {
+  let to = priv <> "/static"
   let from = "output/static"
   case simplifile.exists(from, follow_links: False) {
     Ok(True) -> Ok(Nil)
