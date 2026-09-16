@@ -135,16 +135,13 @@ a:active {
   background: black;
 }
 
-/*
-.ct-chart {
-  min-width: TODO
-}
-*/
-
 .ct-label {
   color: var(--fg1);
   font-size: 0.9rem;
-  /* TODO prevent wrapping? */
+}
+
+.ct-horizontal {
+  max-width: 2ch;
 }
 
 @media screen and (max-width: 768px) {
