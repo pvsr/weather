@@ -14,6 +14,7 @@
       perSystem =
         {
           pkgs,
+          lib,
           self',
           inputs',
           ...
@@ -25,6 +26,12 @@
             upload = pkgs.writeShellScriptBin "upload" (builtins.readFile ./upload);
           };
           devShells.default = pkgs.mkShell { inherit (self'.packages.default) nativeBuildInputs; };
+          apps.serve = {
+            type = "app";
+            program = pkgs.writeShellScriptBin "serve-site" ''
+              ${lib.getExe pkgs.live-server} output -o
+            '';
+          };
         };
     };
 }
