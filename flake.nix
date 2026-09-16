@@ -21,9 +21,20 @@
         }:
         {
           packages = {
-            weather = inputs'.nix-gleam.packages.buildGleamApplication { src = ./.; };
+            weather = inputs'.nix-gleam.packages.buildGleamApplication {
+              src = ./.;
+              meta.mainProgram = "weather";
+            };
             default = self'.packages.weather;
-            upload = pkgs.writeShellScriptBin "upload" (builtins.readFile ./upload);
+            upload = pkgs.writeShellApplication {
+              name = "upload";
+              runtimeInputs = with pkgs; [
+                gnutar
+                zstd
+                curl
+              ];
+              text = builtins.readFile ./upload;
+            };
           };
           devShells.default = pkgs.mkShell { inherit (self'.packages.default) nativeBuildInputs; };
           apps.serve = {
