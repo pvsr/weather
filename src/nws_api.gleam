@@ -87,7 +87,7 @@ pub fn get_forecast_data(lat: Float, lon: Float) -> Result(ForecastData) {
     decode.at(["properties"], alert_decoder()),
   ))
 
-  ForecastData(periods:, hourly:, alerts:)
+  ForecastData(periods:, hourly:, alerts: filter_alerts(alerts))
 }
 
 fn get(url) -> Result(Response(String)) {
@@ -193,4 +193,8 @@ fn fahrenheit_from_c(c: Int) -> Int {
 fn large_icon(url: String) -> String {
   string.replace(url, "?size=small", "?size=large")
   |> string.replace("?size=medium", "?size=large")
+}
+
+fn filter_alerts(alerts: List(WeatherAlert)) -> List(WeatherAlert) {
+  alerts |> list.filter(fn(alert) { alert.event != "Rip Current Statement" })
 }
