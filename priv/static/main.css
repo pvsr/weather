@@ -128,20 +128,26 @@ a:hover, a:active {
   color: var(--aqua);
 }
 
-.severe-alert {
-  background: var(--overlay2);
-  color: var(--surface0);
-  border: 0.3rem solid var(--orange);
-  padding: 0.5rem;
-  border-radius: 2rem;
-  width: fit-content;
-  margin: 2rem auto;
-  text-align: center;
-  list-style-type: none;
-}
+.alerts {
+  display: grid;
+  grid-template-columns: minmax(0, max-content);
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
 
-.severe-alert > h2 {
-  font-size: 1.5rem;
+  div {
+    background: var(--overlay2);
+    color: var(--surface0);
+    border: 0.3rem solid var(--orange);
+    padding: 0.5rem;
+    border-radius: 2rem;
+    text-align: center;
+    list-style-type: none;
+
+    h2 {
+      font-size: 1.3rem;
+    }
+  }
 }
 
 .weather-container {

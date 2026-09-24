@@ -22,12 +22,13 @@
   <% end %>
   </nav>
 
-  <% for alert in alerts %>
-    <div class="severe-alert">
-      <h2><%= alert.event %> until <%= alert.expires %></h2>
-      <p><%= alert.description %></p>
-    </div>
-  <% end %>
+  <div class="alerts">
+    <% for alert in alerts %>
+      <div>
+        <h2><%= alert.event %> until <%= alert.expires %></h2>
+      </div>
+    <% end %>
+  </div class="alerts">
 
   <div class="ct-chart"></div>
   <script>

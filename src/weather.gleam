@@ -173,7 +173,6 @@ fn alert_to_assign(a: WeatherAlert) -> assigns.AssignData {
     dict.from_list([
       #("event", assigns.String(a.event)),
       #("severity", assigns.String(a.severity)),
-      #("description", assigns.String(a.description)),
       #("expires", assigns.String(a.expires)),
     ]),
   )
